@@ -4,15 +4,16 @@ Ein Browser-basiertes Lernprogramm für Speedcubing-Anfänger mit Fokus auf Perz
 
 ## Beschreibung
 
-CubeLearner bietet eine interaktive isometrische 3x3 Zauberwürfel-Darstellung, die speziell für Anfänger entwickelt wurde, um ihre Wahrnehmung und Mustererkennung zu trainieren.
+CubeLearner trainiert die visuelle Wahrnehmung von Rubik's Cube Mustern. Anfänger lernen, Farbkombinationen schnell zu erkennen und zu bewerten - eine wichtige Fähigkeit beim Speedcubing.
 
-## Features (aktuell)
+## Features
 
-- Isometrische Darstellung eines 3x3 Zauberwürfels
-- Vier sichtbare Seiten: Vorderseite, Oberseite, linke und rechte Seite
-- SVG-basierte Darstellung für skalierbare Grafiken
-- Responsive Design für alle Bildschirmgrößen
+- Isometrische 3D-Darstellung eines 3x3 Zauberwürfels
+- Perzeptionsübungen mit Zeitmessung
+- Tastatursteuerung für schnelles Training
+- Detaillierte Ergebnisauswertung
 - Keine Dependencies - reines Vanilla JavaScript
+- GitHub Pages ready
 
 ## Verwendung
 
@@ -21,14 +22,30 @@ CubeLearner bietet eine interaktive isometrische 3x3 Zauberwürfel-Darstellung, 
 1. Repository klonen oder herunterladen
 2. `index.html` in einem modernen Browser öffnen
 
-### GitHub Pages
+### Trainingsablauf
 
-Dieses Projekt ist bereit für GitHub Pages Deployment:
+1. **Menü**: Übung auswählen
+2. **Ready**: `Leertaste` drücken zum Starten
+3. **Training**: Muster bewerten
+   - `J` = Das Muster ist **richtig**
+   - `K` = Das Muster ist **falsch**
+4. **Ergebnis**: Auswertung ansehen
+   - `Leertaste` = Nochmal
+   - `M` = Zurück zum Menü
 
-1. Repository auf GitHub pushen
-2. In den Repository-Einstellungen GitHub Pages aktivieren
-3. Als Source "main branch" wählen
-4. Die Seite ist unter `https://<username>.github.io/cubelearner/` verfügbar
+## Übungen
+
+### Kantenpaar-Erkennung
+
+Trainiert das Erkennen korrekter Farbpaare an der Kante zwischen Front und Links.
+
+**Korrekte Paare (Front → Links):**
+| Front | Links |
+|-------|-------|
+| Grün | Orange |
+| Rot | Grün |
+| Blau | Rot |
+| Orange | Blau |
 
 ## Projektstruktur
 
@@ -38,101 +55,69 @@ cubelearner/
 ├── css/
 │   └── style.css       # Styling
 ├── js/
-│   ├── cube.js         # Würfel-Rendering-Logik
+│   ├── cube.js         # Würfel-Rendering
+│   ├── exercises.js    # Übungsdefinitionen
 │   └── app.js          # Hauptanwendungslogik
-└── README.md           # Diese Datei
+├── docs/
+│   ├── CUBE_SCHEMA.md  # Farbschema und Koordinatensystem
+│   └── EXERCISES.md    # Übungs-Entwicklerdokumentation
+└── README.md
 ```
+
+## Dokumentation
+
+- [Farbschema & Koordinatensystem](docs/CUBE_SCHEMA.md)
+- [Übungen entwickeln](docs/EXERCISES.md)
 
 ## Technologie-Stack
 
 - **HTML5**: Semantische Struktur
 - **CSS3**: Modernes, responsives Styling
 - **SVG**: Vektorgrafiken für den Würfel
-- **Vanilla JavaScript**: Keine Frameworks oder Libraries
+- **Vanilla JavaScript**: Keine Frameworks
 
-## Roadmap
+## Rubik's Cube Farbschema
 
-### Geplante Features
+CubeLearner verwendet das westliche Standard-Farbschema:
 
-- **Perzeptionsaufgaben**
-  - Einzelne Felder einfärben und Muster erkennen
-  - Timer für Geschwindigkeitstraining
-  - Fortschrittsverfolgung
-
-- **Farbschema**
-  - Standard Rubik's Cube Farben implementieren
-  - Farbige Würfelseiten (Weiß, Gelb, Grün, Blau, Rot, Orange)
-
-- **Interaktivität**
-  - Felder anklickbar machen
-  - Pattern-Anzeige
-  - Lernmodi hinzufügen
-
-- **Lern-Modi**
-  - Pattern Recognition
-  - Color Matching
-  - Position Memory
-  - Algorithm Visualization
+- **Gegenüberliegend**: Weiß ↔ Gelb, Rot ↔ Orange, Blau ↔ Grün
+- **Standard-Ansicht**: Gelb oben, Grün vorne
 
 ## Entwicklung
 
-### Voraussetzungen
+### Neue Übung hinzufügen
 
-- Ein moderner Webbrowser (Chrome, Firefox, Safari, Edge)
-- Optional: Ein lokaler Webserver für Entwicklung
+Siehe [docs/EXERCISES.md](docs/EXERCISES.md) für eine Anleitung.
 
-### Code-Struktur
+### API
 
-#### cube.js
+```javascript
+// Feld einfärben
+setFieldColor('front', 0, 1, 'green');
 
-Enthält die gesamte Rendering-Logik:
-- Isometrische Projektionsfunktionen
-- SVG-Element-Erstellung
-- Vier Würfelseiten-Generierung
+// Alle Felder zurücksetzen
+resetCubeColors();
 
-#### app.js
+// Würfel neu erstellen
+createCube(svgElement, 300);
+```
 
-Haupteinstiegspunkt:
-- Initialisierung der Anwendung
-- Event-Handling (zukünftig)
+## GitHub Pages Deployment
 
-#### style.css
-
-- CSS-Variablen für einfache Anpassung
-- Responsive Layout
-- Hover-Effekte für Interaktivität
-
-## Technische Details
-
-### Isometrische Projektion
-
-Die Würfeldarstellung verwendet eine vereinfachte isometrische Projektion mit:
-- 30° Winkel für die Perspektive
-- Depth-Faktor: cos(30°) ≈ 0.866
-- Height-Faktor: sin(30°) = 0.5
-
-### SVG-Koordinaten
-
-Jedes der 9 Felder pro Seite wird als separates SVG-Element erstellt mit:
-- `data-face`: Welche Seite (front, top, left, right)
-- `data-row`: Reihe (0-2)
-- `data-col`: Spalte (0-2)
-- `data-color`: Aktuelle Farbe
+1. Repository auf GitHub pushen
+2. Settings → Pages → Source: "main branch"
+3. Seite ist unter `https://<username>.github.io/cubelearner/` verfügbar
 
 ## Browser-Kompatibilität
 
-- Chrome/Edge (ab Version 90)
-- Firefox (ab Version 88)
-- Safari (ab Version 14)
+- Chrome/Edge 90+
+- Firefox 88+
+- Safari 14+
 
 ## Lizenz
 
-Dieses Projekt ist frei verfügbar für Lernzwecke.
-
-## Kontakt & Feedback
-
-Bei Fragen oder Anregungen bitte ein Issue auf GitHub erstellen.
+Frei verfügbar für Lernzwecke.
 
 ---
 
-Entwickelt mit ❤️ für die Speedcubing-Community
+Entwickelt für die Speedcubing-Community
