@@ -15,15 +15,95 @@
         </header>
 
         <main>
-            <div id="cube-container">
+            <!-- Menü Screen -->
+            <div id="menu-screen" class="screen">
+                <h2>Übung auswählen</h2>
+                <div id="exercise-list">
+                    <!-- Wird dynamisch gefüllt -->
+                </div>
+            </div>
+
+            <!-- Ready Screen -->
+            <div id="ready-screen" class="screen hidden">
+                <h2 id="exercise-name">Übung</h2>
+                <div class="ready-instructions">
+                    <p>Drücke <kbd>Leertaste</kbd> um zu starten</p>
+                    <div class="key-hints">
+                        <div class="key-hint">
+                            <kbd>J</kbd>
+                            <span>= Richtig</span>
+                        </div>
+                        <div class="key-hint">
+                            <kbd>K</kbd>
+                            <span>= Falsch</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Running Screen -->
+            <div id="running-screen" class="screen hidden">
+                <div id="round-counter">Runde 1 / 10</div>
+                <div id="instructions">
+                    <kbd>J</kbd> = Richtig | <kbd>K</kbd> = Falsch
+                </div>
+            </div>
+
+            <!-- Würfel Container -->
+            <div id="cube-container" class="hidden">
                 <svg id="cube" viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
                     <!-- Der Würfel wird hier dynamisch eingefügt -->
                 </svg>
+            </div>
+
+            <!-- Result Screen -->
+            <div id="result-screen" class="screen hidden">
+                <h2>Ergebnis</h2>
+
+                <div class="result-summary">
+                    <div class="summary-item">
+                        <span class="summary-label">Gesamtzeit</span>
+                        <span class="summary-value"><span id="total-time">0.00</span>s</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Richtig</span>
+                        <span class="summary-value" id="correct-count">0 / 10</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Genauigkeit</span>
+                        <span class="summary-value"><span id="accuracy">0</span>%</span>
+                    </div>
+                </div>
+
+                <table class="result-table">
+                    <thead>
+                        <tr>
+                            <th>Runde</th>
+                            <th>Muster</th>
+                            <th>Antwort</th>
+                            <th>Ergebnis</th>
+                            <th>Zeit</th>
+                        </tr>
+                    </thead>
+                    <tbody id="result-body">
+                        <!-- Wird dynamisch gefüllt -->
+                    </tbody>
+                </table>
+
+                <div class="result-actions">
+                    <button onclick="restartExercise()" class="btn btn-primary">
+                        Nochmal <kbd>Leertaste</kbd>
+                    </button>
+                    <button onclick="backToMenu()" class="btn btn-secondary">
+                        Menü <kbd>M</kbd>
+                    </button>
+                </div>
             </div>
         </main>
     </div>
 
     <script src="js/cube.js"></script>
+    <script src="js/exercises.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>

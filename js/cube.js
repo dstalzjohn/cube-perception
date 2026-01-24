@@ -33,8 +33,41 @@ function updateDepthScale(scalePercent) {
 
 // Standard-Farben
 const COLORS = {
-  gray: '#808080'
+  gray: '#808080',
+  white: '#FFFFFF',
+  yellow: '#FFFF00',
+  green: '#00FF00',
+  blue: '#0000FF',
+  red: '#FF0000',
+  orange: '#FFA500'
 };
+
+/**
+ * Färbt ein bestimmtes Feld auf dem Würfel ein
+ * @param {string} face - 'front', 'top', 'left', 'right'
+ * @param {number} row - Reihe (0-2)
+ * @param {number} col - Spalte (0-2)
+ * @param {string} color - Farbname aus COLORS oder Hex-Wert
+ */
+function setFieldColor(face, row, col, color) {
+  const field = document.querySelector(`[data-face="${face}"][data-row="${row}"][data-col="${col}"]`);
+  if (field) {
+    const colorValue = COLORS[color] || color;
+    field.style.fill = colorValue;
+    field.setAttribute('data-color', color);
+  }
+}
+
+/**
+ * Setzt alle Felder auf grau zurück
+ */
+function resetCubeColors() {
+  const fields = document.querySelectorAll('.cube-field');
+  fields.forEach(field => {
+    field.style.fill = COLORS.gray;
+    field.setAttribute('data-color', 'gray');
+  });
+}
 
 // Gap zwischen Feldern
 const GAP = 3;
