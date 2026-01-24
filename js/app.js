@@ -4,7 +4,6 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Hole das SVG-Element
   const svgElement = document.getElementById('cube');
 
   if (!svgElement) {

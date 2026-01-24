@@ -5,10 +5,31 @@
  * Ansicht: Vorderseite als Quadrat, obere/linke/rechte Seiten perspektivisch nach oben-außen
  */
 
-// Konstanten für die isometrische Projektion
-const ANGLE = 30 * Math.PI / 180;
-const DEPTH_FACTOR = Math.cos(ANGLE);  // ~0.866
-const HEIGHT_FACTOR = Math.sin(ANGLE); // 0.5
+// ============================================================
+// PERSPEKTIV-EINSTELLUNGEN
+// ============================================================
+// Fester Winkel: 70 Grad
+const PERSPECTIVE_ANGLE_DEGREES = 70;
+const ANGLE_RAD = PERSPECTIVE_ANGLE_DEGREES * Math.PI / 180;
+
+// Tiefenskalierung (0-100%): Bestimmt wie weit die Seiten nach hinten gehen
+// - 100% = volle Tiefe (gleiche Länge wie Vorderseite)
+// - 50% = halbe Tiefe
+// - 30% = flache Darstellung
+let DEPTH_SCALE = 50;
+
+// Berechnete Faktoren
+let DEPTH_FACTOR = Math.cos(ANGLE_RAD) * (DEPTH_SCALE / 100);
+let HEIGHT_FACTOR = Math.sin(ANGLE_RAD) * (DEPTH_SCALE / 100);
+
+/**
+ * Aktualisiert die Tiefenskalierung
+ */
+function updateDepthScale(scalePercent) {
+  DEPTH_SCALE = scalePercent;
+  DEPTH_FACTOR = Math.cos(ANGLE_RAD) * (DEPTH_SCALE / 100);
+  HEIGHT_FACTOR = Math.sin(ANGLE_RAD) * (DEPTH_SCALE / 100);
+}
 
 // Standard-Farben
 const COLORS = {
