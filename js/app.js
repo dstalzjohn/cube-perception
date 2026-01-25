@@ -43,7 +43,16 @@ function initApp() {
     resultBody: document.getElementById('result-body'),
     totalTime: document.getElementById('total-time'),
     correctCount: document.getElementById('correct-count'),
-    accuracy: document.getElementById('accuracy')
+    accuracy: document.getElementById('accuracy'),
+    // Buttons
+    answerButtons: document.getElementById('answer-buttons'),
+    btnCorrect: document.getElementById('btn-correct'),
+    btnWrong: document.getElementById('btn-wrong'),
+    btnExit: document.getElementById('btn-exit'),
+    btnStart: document.getElementById('btn-start'),
+    btnBackMenu: document.getElementById('btn-back-menu'),
+    btnRestart: document.getElementById('btn-restart'),
+    btnMenu: document.getElementById('btn-menu')
   };
 
   // Würfel erstellen
@@ -54,6 +63,9 @@ function initApp() {
 
   // Keyboard Events
   document.addEventListener('keydown', handleKeyPress);
+
+  // Button Events
+  initButtonHandlers();
 
   // Zeige Menü
   showState(AppState.MENU);
@@ -229,11 +241,13 @@ function showState(newState) {
   elements.runningScreen.classList.add('hidden');
   elements.resultScreen.classList.add('hidden');
 
-  // Cube Container je nach State anzeigen
+  // Cube Container und Answer Buttons je nach State anzeigen
   if (newState === AppState.RUNNING) {
     elements.cubeContainer.classList.remove('hidden');
+    elements.answerButtons.classList.remove('hidden');
   } else {
     elements.cubeContainer.classList.add('hidden');
+    elements.answerButtons.classList.add('hidden');
   }
 
   // Aktiven Screen anzeigen
@@ -254,6 +268,24 @@ function showState(newState) {
 }
 
 /**
+ * Initialisiert Button Event Handler
+ */
+function initButtonHandlers() {
+  // Ready Screen
+  elements.btnStart.addEventListener('click', startExercise);
+  elements.btnBackMenu.addEventListener('click', backToMenu);
+
+  // Running Screen (Antwort-Buttons)
+  elements.btnCorrect.addEventListener('click', () => submitAnswer(true));
+  elements.btnWrong.addEventListener('click', () => submitAnswer(false));
+  elements.btnExit.addEventListener('click', backToMenu);
+
+  // Result Screen
+  elements.btnRestart.addEventListener('click', restartExercise);
+  elements.btnMenu.addEventListener('click', backToMenu);
+}
+
+/**
  * Keyboard Event Handler
  */
 function handleKeyPress(event) {
@@ -264,6 +296,8 @@ function handleKeyPress(event) {
       if (key === ' ' || event.code === 'Space') {
         event.preventDefault();
         startExercise();
+      } else if (key === 'escape') {
+        backToMenu();
       }
       break;
 
@@ -272,6 +306,8 @@ function handleKeyPress(event) {
         submitAnswer(true);  // User sagt: "Ist richtig"
       } else if (key === 'k') {
         submitAnswer(false); // User sagt: "Ist falsch"
+      } else if (key === 'escape') {
+        backToMenu();
       }
       break;
 

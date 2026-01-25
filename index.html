@@ -2,8 +2,10 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="description" content="Speedcuben Lernprogramm für Anfänger mit Perzeptionsaufgaben">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <title>CubeLearner - Speedcuben Training</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -27,7 +29,6 @@
             <div id="ready-screen" class="screen hidden">
                 <h2 id="exercise-name">Übung</h2>
                 <div class="ready-instructions">
-                    <p>Drücke <kbd>Leertaste</kbd> um zu starten</p>
                     <div class="key-hints">
                         <div class="key-hint">
                             <kbd>J</kbd>
@@ -39,14 +40,19 @@
                         </div>
                     </div>
                 </div>
+                <div class="screen-actions">
+                    <button id="btn-start" class="btn btn-primary btn-large">
+                        Start <kbd>Leertaste</kbd>
+                    </button>
+                    <button id="btn-back-menu" class="btn btn-secondary">
+                        Zurück <kbd>Esc</kbd>
+                    </button>
+                </div>
             </div>
 
             <!-- Running Screen -->
             <div id="running-screen" class="screen hidden">
                 <div id="round-counter">Runde 1 / 10</div>
-                <div id="instructions">
-                    <kbd>J</kbd> = Richtig | <kbd>K</kbd> = Falsch
-                </div>
             </div>
 
             <!-- Würfel Container -->
@@ -54,6 +60,19 @@
                 <svg id="cube" viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
                     <!-- Der Würfel wird hier dynamisch eingefügt -->
                 </svg>
+            </div>
+
+            <!-- Answer Buttons (während Running) -->
+            <div id="answer-buttons" class="hidden">
+                <button id="btn-correct" class="btn btn-success btn-answer">
+                    Richtig <kbd>J</kbd>
+                </button>
+                <button id="btn-wrong" class="btn btn-danger btn-answer">
+                    Falsch <kbd>K</kbd>
+                </button>
+                <button id="btn-exit" class="btn btn-secondary btn-exit">
+                    Exit <kbd>Esc</kbd>
+                </button>
             </div>
 
             <!-- Result Screen -->
@@ -91,10 +110,10 @@
                 </table>
 
                 <div class="result-actions">
-                    <button onclick="restartExercise()" class="btn btn-primary">
+                    <button id="btn-restart" class="btn btn-primary">
                         Nochmal <kbd>Leertaste</kbd>
                     </button>
-                    <button onclick="backToMenu()" class="btn btn-secondary">
+                    <button id="btn-menu" class="btn btn-secondary">
                         Menü <kbd>M</kbd>
                     </button>
                 </div>
