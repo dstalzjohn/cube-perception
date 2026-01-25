@@ -16,6 +16,85 @@
 // Die 4 Seitenfarben (ohne Gelb/Weiß)
 const SIDE_COLORS = ['green', 'red', 'blue', 'orange'];
 
+// ============================================================
+// ECKEN-DEFINITIONEN
+// ============================================================
+
+/**
+ * Die 4 oberen Ecken des Würfels
+ * Jede Ecke hat 3 Farben: Gelb + zwei benachbarte Seitenfarben
+ * Die Farben sind als Set definiert (Reihenfolge egal für Identifikation)
+ */
+const UPPER_CORNERS = [
+  ['yellow', 'green', 'orange'],   // Vorne-Links bei Grün vorne
+  ['yellow', 'green', 'red'],      // Vorne-Rechts bei Grün vorne
+  ['yellow', 'blue', 'red'],       // Vorne-Rechts bei Blau vorne
+  ['yellow', 'blue', 'orange']     // Vorne-Links bei Blau vorne
+];
+
+/**
+ * Korrekte Ecke für jede Kanten-Farbe und Position
+ * Key: Kantenfarbe
+ * Value: { left: [Eckenfarben], right: [Eckenfarben] }
+ */
+const CORRECT_CORNER_FOR_EDGE = {
+  'green': {
+    left: ['yellow', 'green', 'orange'],
+    right: ['yellow', 'green', 'red']
+  },
+  'red': {
+    left: ['yellow', 'red', 'green'],
+    right: ['yellow', 'red', 'blue']
+  },
+  'blue': {
+    left: ['yellow', 'blue', 'red'],
+    right: ['yellow', 'blue', 'orange']
+  },
+  'orange': {
+    left: ['yellow', 'orange', 'blue'],
+    right: ['yellow', 'orange', 'green']
+  }
+};
+
+/**
+ * Eck-Positionen auf dem Würfel
+ * Für linke und rechte obere Ecke
+ */
+const CORNER_POSITIONS = {
+  left: [
+    { face: 'front', row: 0, col: 0 },
+    { face: 'left', row: 0, col: 0 },
+    { face: 'top', row: 0, col: 0 }
+  ],
+  right: [
+    { face: 'front', row: 0, col: 2 },
+    { face: 'right', row: 0, col: 0 },
+    { face: 'top', row: 0, col: 2 }
+  ]
+};
+
+/**
+ * Prüft ob zwei Ecken gleich sind (als Farb-Sets)
+ */
+function cornersEqual(corner1, corner2) {
+  const set1 = new Set(corner1);
+  const set2 = new Set(corner2);
+  if (set1.size !== set2.size) return false;
+  for (const color of set1) {
+    if (!set2.has(color)) return false;
+  }
+  return true;
+}
+
+/**
+ * Rotiert ein Array um n Positionen
+ */
+function rotateArray(arr, n) {
+  const len = arr.length;
+  const rotation = ((n % len) + len) % len;
+  return [...arr.slice(rotation), ...arr.slice(0, rotation)];
+}
+
 // Die 3 sichtbaren oberen mittleren Felder
 const VISIBLE_FIELDS = [
   { face: 'front', row: 0, col: 1, name: 'Front' },
@@ -122,6 +201,10 @@ function getFieldDef(fieldName) {
   return VISIBLE_FIELDS.find(f => f.face === fieldName);
 }
 
+// ============================================================
+// ÜBUNGEN
+// ============================================================
+
 const EXERCISES = {
   'edge-pair-recognition': {
     id: 'edge-pair-recognition',
@@ -160,6 +243,61 @@ const EXERCISES = {
         combination: combination.name,
         color1: selectedPair.color1,
         color2: selectedPair.color2
+      };
+    }
+  },
+
+  'corner-edge-recognition': {
+    id: 'corner-edge-recognition',
+    name: 'Ecke-Kante-Erkennung',
+    description: 'Erkenne ob die Ecke zur Kante gehört (Position, nicht Orientierung)',
+    rounds: 10,
+
+    generateRound() {
+      // 1. Wähle zufällige Kantenfarbe
+      const edgeColor = SIDE_COLORS[Math.floor(Math.random() * SIDE_COLORS.length)];
+
+      // 2. Wähle zufällig linke oder rechte Ecke
+      const cornerSide = Math.random() < 0.5 ? 'left' : 'right';
+
+      // 3. Bestimme die korrekte Ecke für diese Kombination
+      const correctCorner = CORRECT_CORNER_FOR_EDGE[edgeColor][cornerSide];
+
+      // 4. Entscheide ob richtig oder falsch (50/50)
+      const shouldBeCorrect = Math.random() < 0.5;
+
+      // 5. Wähle die anzuzeigende Ecke
+      let displayedCorner;
+      if (shouldBeCorrect) {
+        displayedCorner = [...correctCorner];
+      } else {
+        // Wähle eine falsche Ecke (eine der anderen 3)
+        const wrongCorners = UPPER_CORNERS.filter(c => !cornersEqual(c, correctCorner));
+        displayedCorner = [...wrongCorners[Math.floor(Math.random() * wrongCorners.length)]];
+      }
+
+      // 6. Zufällige Orientierung der Ecke (0, 1 oder 2 Rotationen)
+      const orientation = Math.floor(Math.random() * 3);
+      const rotatedColors = rotateArray(displayedCorner, orientation);
+
+      // 7. Erstelle das Pattern
+      const cornerPositions = CORNER_POSITIONS[cornerSide];
+      const pattern = [
+        // Kante (Front oben-mitte)
+        { face: 'front', row: 0, col: 1, color: edgeColor },
+        // Ecke (3 Felder)
+        { face: cornerPositions[0].face, row: cornerPositions[0].row, col: cornerPositions[0].col, color: rotatedColors[0] },
+        { face: cornerPositions[1].face, row: cornerPositions[1].row, col: cornerPositions[1].col, color: rotatedColors[1] },
+        { face: cornerPositions[2].face, row: cornerPositions[2].row, col: cornerPositions[2].col, color: rotatedColors[2] }
+      ];
+
+      return {
+        pattern,
+        isCorrect: shouldBeCorrect,
+        edgeColor,
+        cornerSide: cornerSide === 'left' ? 'Links' : 'Rechts',
+        cornerColors: displayedCorner,
+        orientation
       };
     }
   }

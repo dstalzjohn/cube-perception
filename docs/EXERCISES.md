@@ -60,16 +60,70 @@ Siehe [CUBE_SCHEMA.md](./CUBE_SCHEMA.md) für das vollständige Koordinatensyste
 
 ### 1. Kantenpaar-Erkennung (`edge-pair-recognition`)
 
-**Ziel**: Erkennen, ob die Farben von Front (oben-mitte) und Links (oben-rechts) korrekt zueinander liegen.
+**Ziel**: Erkennen, ob zwei zufällig gewählte obere Kantenfarben korrekt zueinander liegen.
 
-**Felder**:
+**Felder** (2 von 3 werden zufällig gewählt):
 - Front oben-mitte: `{ face: 'front', row: 0, col: 1 }`
 - Left oben-mitte: `{ face: 'left', row: 0, col: 1 }`
+- Right oben-mitte: `{ face: 'right', row: 0, col: 1 }`
+
+**Feld-Kombinationen**:
+- Front-Links
+- Front-Rechts
+- Links-Rechts
 
 **Logik**:
-- 4 korrekte Paare: Grün-Orange, Rot-Grün, Blau-Rot, Orange-Blau
-- 8 falsche Paare: alle anderen Kombinationen
+- Je Kombination 4 korrekte und 8 falsche Paare
 - 50% Chance für richtig/falsch pro Runde
+
+---
+
+### 2. Ecke-Kante-Erkennung (`corner-edge-recognition`)
+
+**Ziel**: Erkennen, ob eine Ecke zur gezeigten Kante gehört (Position, nicht Orientierung).
+
+**Konzept**:
+- Die Kante (Front oben-mitte) zeigt eine Seitenfarbe
+- Eine der beiden sichtbaren Ecken (links oder rechts) wird mit allen 3 Farben angezeigt
+- Die Ecke kann in 3 Orientierungen gedreht sein (Gelb oben, vorne oder seitlich)
+- Der User muss erkennen ob Ecke und Kante ZUSAMMENGEHÖREN
+
+**Felder**:
+- Kante: `{ face: 'front', row: 0, col: 1 }`
+- Linke Ecke:
+  - `{ face: 'front', row: 0, col: 0 }`
+  - `{ face: 'left', row: 0, col: 0 }`
+  - `{ face: 'top', row: 0, col: 0 }`
+- Rechte Ecke:
+  - `{ face: 'front', row: 0, col: 2 }`
+  - `{ face: 'right', row: 0, col: 0 }`
+  - `{ face: 'top', row: 0, col: 2 }`
+
+**Die 4 oberen Ecken**:
+| Ecke | Farben |
+|------|--------|
+| Vorne-Links (Grün vorne) | Gelb, Grün, Orange |
+| Vorne-Rechts (Grün vorne) | Gelb, Grün, Rot |
+| Vorne-Links (Blau vorne) | Gelb, Blau, Orange |
+| Vorne-Rechts (Blau vorne) | Gelb, Blau, Rot |
+
+**Korrekte Zuordnungen**:
+| Kanten-Farbe | Linke Ecke | Rechte Ecke |
+|--------------|------------|-------------|
+| Grün | Gelb-Grün-Orange | Gelb-Grün-Rot |
+| Rot | Gelb-Rot-Grün | Gelb-Rot-Blau |
+| Blau | Gelb-Blau-Rot | Gelb-Blau-Orange |
+| Orange | Gelb-Orange-Blau | Gelb-Orange-Grün |
+
+**Orientierung**:
+Die 3 Farben der Ecke rotieren durch die 3 Positionen:
+- Orientierung 0: [Farbe1 auf Front, Farbe2 auf Seite, Farbe3 auf Top]
+- Orientierung 1: [Farbe3 auf Front, Farbe1 auf Seite, Farbe2 auf Top]
+- Orientierung 2: [Farbe2 auf Front, Farbe3 auf Seite, Farbe1 auf Top]
+
+**Logik**:
+- 50% Chance für richtig/falsch pro Runde
+- Zufällige Orientierung der Ecke (0, 1 oder 2)
 
 ## Neue Übung erstellen
 
@@ -111,23 +165,17 @@ const EXERCISES = {
 
 ## Ideen für weitere Übungen
 
-### Kantenpaar Front-Rechts
-
-Wie die bestehende Übung, aber für die rechte Seite:
-- Front oben-mitte + Right oben-links
-- Korrekte Paare: Grün-Rot, Rot-Blau, Blau-Orange, Orange-Grün
-
 ### Drei Kanten gleichzeitig
 
 Zeige Front-Links, Front-Rechts und Front-Oben:
 - Erhöht die Schwierigkeit
 - User muss alle drei Paare gleichzeitig bewerten
 
-### Ecken-Erkennung
+### Ecken-Orientierung
 
-Ecken haben 3 Farben:
-- Front oben-links + Left oben-rechts + Top vorne-links
-- Komplexere Logik für korrekte Kombinationen
+Wie Ecke-Kante-Erkennung, aber:
+- Prüfen ob die Ecke korrekt ORIENTIERT ist (Gelb oben)
+- Nicht nur ob sie an der richtigen Position ist
 
 ### Zeitdruck-Modus
 

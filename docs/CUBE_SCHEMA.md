@@ -146,7 +146,31 @@ Diese Kante verbindet:
 
 Bei gelöstem Würfel: Front = Grün, Top = Gelb
 
-## Korrekte Farbpaare (Front ↔ Links)
+## Ecken (Corners)
+
+Ecken sind die Teile des Würfels mit 3 Farben. Sie liegen an den Schnittpunkten von drei Seiten.
+
+### Ecke Front-Links-Oben
+
+Diese Ecke verbindet:
+- **Front** oben-links: `{ face: 'front', row: 0, col: 0 }`
+- **Left** oben-rechts: `{ face: 'left', row: 0, col: 0 }`
+- **Top** vorne-links: `{ face: 'top', row: 0, col: 0 }`
+
+Bei gelöstem Würfel: Front = Grün, Left = Orange, Top = Gelb
+
+### Ecke Front-Rechts-Oben
+
+Diese Ecke verbindet:
+- **Front** oben-rechts: `{ face: 'front', row: 0, col: 2 }`
+- **Right** oben-links: `{ face: 'right', row: 0, col: 0 }`
+- **Top** vorne-rechts: `{ face: 'top', row: 0, col: 2 }`
+
+Bei gelöstem Würfel: Front = Grün, Right = Rot, Top = Gelb
+
+## Korrekte Farbpaare (Kanten)
+
+### Front ↔ Links
 
 | Front | Links | Korrekt? |
 |-------|-------|----------|
@@ -155,7 +179,27 @@ Bei gelöstem Würfel: Front = Grün, Top = Gelb
 | Blau | Rot | ✓ |
 | Orange | Blau | ✓ |
 
+### Front ↔ Rechts
+
+| Front | Rechts | Korrekt? |
+|-------|--------|----------|
+| Grün | Rot | ✓ |
+| Rot | Blau | ✓ |
+| Blau | Orange | ✓ |
+| Orange | Grün | ✓ |
+
 Alle anderen Kombinationen sind **falsch**.
+
+## Korrekte Ecken (Obere Ebene)
+
+Die 4 oberen Ecken enthalten immer Gelb plus zwei benachbarte Seitenfarben:
+
+| Ecke | Farben |
+|------|--------|
+| 1 | Gelb, Grün, Orange |
+| 2 | Gelb, Grün, Rot |
+| 3 | Gelb, Blau, Rot |
+| 4 | Gelb, Blau, Orange |
 
 ## Verwendung in Übungen
 
