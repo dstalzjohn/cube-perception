@@ -44,11 +44,19 @@ function initApp() {
     totalTime: document.getElementById('total-time'),
     correctCount: document.getElementById('correct-count'),
     accuracy: document.getElementById('accuracy'),
-    // Buttons
+    // Buttons - Richtig/Falsch
     answerButtons: document.getElementById('answer-buttons'),
     btnCorrect: document.getElementById('btn-correct'),
     btnWrong: document.getElementById('btn-wrong'),
     btnExit: document.getElementById('btn-exit'),
+    // Buttons - Farbwahl
+    colorButtons: document.getElementById('color-buttons'),
+    btnGreen: document.getElementById('btn-green'),
+    btnRed: document.getElementById('btn-red'),
+    btnBlue: document.getElementById('btn-blue'),
+    btnOrange: document.getElementById('btn-orange'),
+    btnExitColor: document.getElementById('btn-exit-color'),
+    // Andere Buttons
     btnStart: document.getElementById('btn-start'),
     btnBackMenu: document.getElementById('btn-back-menu'),
     btnRestart: document.getElementById('btn-restart'),
@@ -138,7 +146,11 @@ function nextRound() {
   // Würfel zurücksetzen und Muster anzeigen
   resetCubeColors();
   roundData.pattern.forEach(p => {
-    setFieldColor(p.face, p.row, p.col, p.color);
+    if (p.color === 'highlight') {
+      highlightField(p.face, p.row, p.col);
+    } else {
+      setFieldColor(p.face, p.row, p.col, p.color);
+    }
   });
 
   // Timer starten
@@ -146,16 +158,42 @@ function nextRound() {
 }
 
 /**
- * Verarbeitet die Antwort des Benutzers
+ * Verarbeitet die Antwort des Benutzers (Richtig/Falsch)
  */
 function submitAnswer(userSaysCorrect) {
   if (state.currentState !== AppState.RUNNING) return;
+  if (state.selectedExercise.answerType === 'color-choice') return;
 
   const roundTime = performance.now() - state.roundStartTime;
   const currentRoundData = state.rounds[state.currentRound];
 
   currentRoundData.userAnswer = userSaysCorrect;
   currentRoundData.correct = (userSaysCorrect === currentRoundData.isCorrect);
+  currentRoundData.time = roundTime;
+
+  // Kurzes visuelles Feedback
+  showFeedback(currentRoundData.correct);
+
+  state.currentRound++;
+
+  // Kurze Pause vor nächster Runde
+  setTimeout(() => {
+    nextRound();
+  }, 300);
+}
+
+/**
+ * Verarbeitet die Farb-Antwort des Benutzers
+ */
+function submitColorAnswer(chosenColor) {
+  if (state.currentState !== AppState.RUNNING) return;
+  if (state.selectedExercise.answerType !== 'color-choice') return;
+
+  const roundTime = performance.now() - state.roundStartTime;
+  const currentRoundData = state.rounds[state.currentRound];
+
+  currentRoundData.userAnswer = chosenColor;
+  currentRoundData.correct = (chosenColor === currentRoundData.correctColor);
   currentRoundData.time = roundTime;
 
   // Kurzes visuelles Feedback
@@ -190,13 +228,25 @@ function finishExercise() {
 
   // Ergebnis-Tabelle füllen
   elements.resultBody.innerHTML = '';
+  const isColorChoice = state.selectedExercise.answerType === 'color-choice';
+
   state.rounds.forEach((round, index) => {
     const row = document.createElement('tr');
     row.className = round.correct ? 'result-correct' : 'result-wrong';
+
+    let patternText, answerText;
+    if (isColorChoice) {
+      patternText = translateColor(round.correctColor);
+      answerText = translateColor(round.userAnswer);
+    } else {
+      patternText = round.isCorrect ? 'Richtig' : 'Falsch';
+      answerText = round.userAnswer ? 'J (Richtig)' : 'K (Falsch)';
+    }
+
     row.innerHTML = `
       <td>${index + 1}</td>
-      <td>${round.isCorrect ? 'Richtig' : 'Falsch'}</td>
-      <td>${round.userAnswer ? 'J (Richtig)' : 'K (Falsch)'}</td>
+      <td>${patternText}</td>
+      <td>${answerText}</td>
       <td>${round.correct ? '✓' : '✗'}</td>
       <td>${(round.time / 1000).toFixed(2)}s</td>
     `;
@@ -244,10 +294,18 @@ function showState(newState) {
   // Cube Container und Answer Buttons je nach State anzeigen
   if (newState === AppState.RUNNING) {
     elements.cubeContainer.classList.remove('hidden');
-    elements.answerButtons.classList.remove('hidden');
+    // Je nach Übungstyp richtige Buttons anzeigen
+    if (state.selectedExercise.answerType === 'color-choice') {
+      elements.answerButtons.classList.add('hidden');
+      elements.colorButtons.classList.remove('hidden');
+    } else {
+      elements.answerButtons.classList.remove('hidden');
+      elements.colorButtons.classList.add('hidden');
+    }
   } else {
     elements.cubeContainer.classList.add('hidden');
     elements.answerButtons.classList.add('hidden');
+    elements.colorButtons.classList.add('hidden');
   }
 
   // Aktiven Screen anzeigen
@@ -275,10 +333,17 @@ function initButtonHandlers() {
   elements.btnStart.addEventListener('click', startExercise);
   elements.btnBackMenu.addEventListener('click', backToMenu);
 
-  // Running Screen (Antwort-Buttons)
+  // Running Screen (Richtig/Falsch-Buttons)
   elements.btnCorrect.addEventListener('click', () => submitAnswer(true));
   elements.btnWrong.addEventListener('click', () => submitAnswer(false));
   elements.btnExit.addEventListener('click', backToMenu);
+
+  // Running Screen (Farb-Buttons)
+  elements.btnGreen.addEventListener('click', () => submitColorAnswer('green'));
+  elements.btnRed.addEventListener('click', () => submitColorAnswer('red'));
+  elements.btnBlue.addEventListener('click', () => submitColorAnswer('blue'));
+  elements.btnOrange.addEventListener('click', () => submitColorAnswer('orange'));
+  elements.btnExitColor.addEventListener('click', backToMenu);
 
   // Result Screen
   elements.btnRestart.addEventListener('click', restartExercise);
@@ -302,12 +367,28 @@ function handleKeyPress(event) {
       break;
 
     case AppState.RUNNING:
-      if (key === 'j') {
-        submitAnswer(true);  // User sagt: "Ist richtig"
-      } else if (key === 'k') {
-        submitAnswer(false); // User sagt: "Ist falsch"
-      } else if (key === 'escape') {
-        backToMenu();
+      if (state.selectedExercise.answerType === 'color-choice') {
+        // Farbwahl-Modus: 1-4 für Farben
+        if (key === '1') {
+          submitColorAnswer('green');
+        } else if (key === '2') {
+          submitColorAnswer('red');
+        } else if (key === '3') {
+          submitColorAnswer('blue');
+        } else if (key === '4') {
+          submitColorAnswer('orange');
+        } else if (key === 'escape') {
+          backToMenu();
+        }
+      } else {
+        // Richtig/Falsch-Modus: J/K
+        if (key === 'j') {
+          submitAnswer(true);  // User sagt: "Ist richtig"
+        } else if (key === 'k') {
+          submitAnswer(false); // User sagt: "Ist falsch"
+        } else if (key === 'escape') {
+          backToMenu();
+        }
       }
       break;
 
@@ -320,6 +401,21 @@ function handleKeyPress(event) {
       }
       break;
   }
+}
+
+/**
+ * Übersetzt Farbnamen ins Deutsche
+ */
+function translateColor(color) {
+  const translations = {
+    'green': 'Grün',
+    'red': 'Rot',
+    'blue': 'Blau',
+    'orange': 'Orange',
+    'yellow': 'Gelb',
+    'white': 'Weiß'
+  };
+  return translations[color] || color;
 }
 
 // App starten wenn DOM geladen

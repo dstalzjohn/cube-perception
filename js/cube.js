@@ -66,7 +66,22 @@ function resetCubeColors() {
   fields.forEach(field => {
     field.style.fill = COLORS.gray;
     field.setAttribute('data-color', 'gray');
+    field.classList.remove('highlight');
   });
+}
+
+/**
+ * Hebt ein Feld hervor (dunkler mit hellem Rahmen)
+ * @param {string} face - 'front', 'top', 'left', 'right'
+ * @param {number} row - Reihe (0-2)
+ * @param {number} col - Spalte (0-2)
+ */
+function highlightField(face, row, col) {
+  const field = document.querySelector(`[data-face="${face}"][data-row="${row}"][data-col="${col}"]`);
+  if (field) {
+    field.classList.add('highlight');
+    field.setAttribute('data-color', 'highlight');
+  }
 }
 
 // Gap zwischen Feldern

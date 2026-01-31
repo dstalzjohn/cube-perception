@@ -174,19 +174,19 @@ Bei gelöstem Würfel: Front = Grün, Right = Rot, Top = Gelb
 
 | Front | Links | Korrekt? |
 |-------|-------|----------|
-| Grün | Orange | ✓ |
-| Rot | Grün | ✓ |
-| Blau | Rot | ✓ |
-| Orange | Blau | ✓ |
+| Grün | Rot | ✓ |
+| Rot | Blau | ✓ |
+| Blau | Orange | ✓ |
+| Orange | Grün | ✓ |
 
 ### Front ↔ Rechts
 
 | Front | Rechts | Korrekt? |
 |-------|--------|----------|
-| Grün | Rot | ✓ |
-| Rot | Blau | ✓ |
-| Blau | Orange | ✓ |
-| Orange | Grün | ✓ |
+| Grün | Orange | ✓ |
+| Rot | Grün | ✓ |
+| Blau | Rot | ✓ |
+| Orange | Blau | ✓ |
 
 Alle anderen Kombinationen sind **falsch**.
 

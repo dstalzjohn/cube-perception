@@ -7,10 +7,10 @@
  * - Bei Gelb oben, im Uhrzeigersinn von oben: Rot → Grün → Orange → Blau
  *
  * Das bedeutet für die Seitenfarben (wenn Gelb oben ist):
- * - Front = Grün  → Links = Orange, Rechts = Rot
- * - Front = Rot   → Links = Grün,   Rechts = Blau
- * - Front = Blau  → Links = Rot,    Rechts = Orange
- * - Front = Orange → Links = Blau,  Rechts = Grün
+ * - Front = Grün  → Links = Rot,    Rechts = Orange
+ * - Front = Rot   → Links = Blau,   Rechts = Grün
+ * - Front = Blau  → Links = Orange, Rechts = Rot
+ * - Front = Orange → Links = Grün,  Rechts = Blau
  */
 
 // Die 4 Seitenfarben (ohne Gelb/Weiß)
@@ -39,20 +39,20 @@ const UPPER_CORNERS = [
  */
 const CORRECT_CORNER_FOR_EDGE = {
   'green': {
-    left: ['yellow', 'green', 'orange'],
-    right: ['yellow', 'green', 'red']
+    left: ['yellow', 'green', 'red'],
+    right: ['yellow', 'green', 'orange']
   },
   'red': {
-    left: ['yellow', 'red', 'green'],
-    right: ['yellow', 'red', 'blue']
+    left: ['yellow', 'red', 'blue'],
+    right: ['yellow', 'red', 'green']
   },
   'blue': {
-    left: ['yellow', 'blue', 'red'],
-    right: ['yellow', 'blue', 'orange']
+    left: ['yellow', 'blue', 'orange'],
+    right: ['yellow', 'blue', 'red']
   },
   'orange': {
-    left: ['yellow', 'orange', 'blue'],
-    right: ['yellow', 'orange', 'green']
+    left: ['yellow', 'orange', 'green'],
+    right: ['yellow', 'orange', 'blue']
   }
 };
 
@@ -119,32 +119,32 @@ const FIELD_COMBINATIONS = [
  * Links-Rechts: Beide müssen zur gleichen Front-Farbe passen
  */
 const CORRECT_PAIRS = {
-  // Front → Links (Links ist die vorherige Farbe im Uhrzeigersinn)
+  // Front → Links (Links ist die nächste Farbe im Uhrzeigersinn)
   'front-left': {
-    'green': 'orange',
-    'red': 'green',
-    'blue': 'red',
-    'orange': 'blue'
-  },
-
-  // Front → Rechts (Rechts ist die nächste Farbe im Uhrzeigersinn)
-  'front-right': {
     'green': 'red',
     'red': 'blue',
     'blue': 'orange',
     'orange': 'green'
   },
 
+  // Front → Rechts (Rechts ist die vorherige Farbe im Uhrzeigersinn)
+  'front-right': {
+    'green': 'orange',
+    'red': 'green',
+    'blue': 'red',
+    'orange': 'blue'
+  },
+
   // Links → Rechts (beide müssen zur gleichen impliziten Front passen)
-  // Wenn Front=Grün: Links=Orange, Rechts=Rot
-  // Wenn Front=Rot: Links=Grün, Rechts=Blau
-  // Wenn Front=Blau: Links=Rot, Rechts=Orange
-  // Wenn Front=Orange: Links=Blau, Rechts=Grün
+  // Wenn Front=Grün: Links=Rot, Rechts=Orange
+  // Wenn Front=Rot: Links=Blau, Rechts=Grün
+  // Wenn Front=Blau: Links=Orange, Rechts=Rot
+  // Wenn Front=Orange: Links=Grün, Rechts=Blau
   'left-right': {
-    'orange': 'red',    // Front wäre Grün
-    'green': 'blue',    // Front wäre Rot
-    'red': 'orange',    // Front wäre Blau
-    'blue': 'green'     // Front wäre Orange
+    'red': 'orange',    // Front wäre Grün
+    'blue': 'green',    // Front wäre Rot
+    'orange': 'red',    // Front wäre Blau
+    'green': 'blue'     // Front wäre Orange
   }
 };
 
@@ -237,12 +237,66 @@ const EXERCISES = {
       return {
         pattern: [
           { face: field1Def.face, row: field1Def.row, col: field1Def.col, color: selectedPair.color1 },
-          { face: field2Def.face, row: field2Def.row, col: field2Def.col, color: selectedPair.color2 }
+          { face: field2Def.face, row: field2Def.row, col: field2Def.col, color: selectedPair.color2 },
+          { face: 'top', row: 1, col: 1, color: 'yellow' }  // Orientierung (Zentrum)
         ],
         isCorrect: selectedPair.isCorrect,
         combination: combination.name,
         color1: selectedPair.color1,
         color2: selectedPair.color2
+      };
+    }
+  },
+
+  'edge-color-quiz': {
+    id: 'edge-color-quiz',
+    name: 'Kantenfarbe raten',
+    description: 'Wähle die richtige Farbe für den markierten Kantenstein',
+    rounds: 10,
+    answerType: 'color-choice',  // Neuer Antworttyp
+
+    generateRound() {
+      // 1. Wähle zufällig 2 der 3 Felder
+      const combinationIndex = Math.floor(Math.random() * FIELD_COMBINATIONS.length);
+      const combination = FIELD_COMBINATIONS[combinationIndex];
+      const [field1Name, field2Name] = combination.fields;
+
+      // 2. Wähle zufällig welches Feld die Farbe zeigt und welches geraten werden muss
+      const showFirst = Math.random() < 0.5;
+      const shownField = showFirst ? field1Name : field2Name;
+      const hiddenField = showFirst ? field2Name : field1Name;
+
+      // 3. Wähle eine zufällige Farbe für das gezeigte Feld
+      const shownColor = SIDE_COLORS[Math.floor(Math.random() * SIDE_COLORS.length)];
+
+      // 4. Bestimme die korrekte Farbe für das versteckte Feld
+      const sortedFields = [shownField, hiddenField].sort();
+      const key = sortedFields.join('-');
+      const correctPairs = CORRECT_PAIRS[key];
+
+      let correctColor;
+      if (sortedFields[0] === shownField) {
+        // shownField ist erstes im Key
+        correctColor = correctPairs[shownColor];
+      } else {
+        // hiddenField ist erstes im Key, also umgekehrt suchen
+        correctColor = Object.keys(correctPairs).find(k => correctPairs[k] === shownColor);
+      }
+
+      // 5. Hole die Feld-Definitionen
+      const shownFieldDef = getFieldDef(shownField);
+      const hiddenFieldDef = getFieldDef(hiddenField);
+
+      return {
+        pattern: [
+          { face: shownFieldDef.face, row: shownFieldDef.row, col: shownFieldDef.col, color: shownColor },
+          { face: hiddenFieldDef.face, row: hiddenFieldDef.row, col: hiddenFieldDef.col, color: 'highlight' },
+          { face: 'top', row: 1, col: 1, color: 'yellow' }  // Orientierung (Zentrum)
+        ],
+        correctColor: correctColor,
+        shownField: shownField,
+        hiddenField: hiddenField,
+        shownColor: shownColor
       };
     }
   },
@@ -288,7 +342,9 @@ const EXERCISES = {
         // Ecke (3 Felder)
         { face: cornerPositions[0].face, row: cornerPositions[0].row, col: cornerPositions[0].col, color: rotatedColors[0] },
         { face: cornerPositions[1].face, row: cornerPositions[1].row, col: cornerPositions[1].col, color: rotatedColors[1] },
-        { face: cornerPositions[2].face, row: cornerPositions[2].row, col: cornerPositions[2].col, color: rotatedColors[2] }
+        { face: cornerPositions[2].face, row: cornerPositions[2].row, col: cornerPositions[2].col, color: rotatedColors[2] },
+        // Orientierung (Top Zentrum)
+        { face: 'top', row: 1, col: 1, color: 'yellow' }
       ];
 
       return {

@@ -190,6 +190,13 @@ kbd {
   stroke-width: 2;
 }
 
+/* Hervorgehobenes Feld (zu erratendes Feld) */
+.cube-field.highlight {
+  fill: #505050;
+  stroke: #ffffff;
+  stroke-width: 3;
+}
+
 /* Feedback Animation */
 .feedback-correct {
   background-color: rgba(40, 167, 69, 0.3);
@@ -256,6 +263,64 @@ kbd {
   border-color: rgba(255, 255, 255, 0.3);
   box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
   color: white;
+}
+
+/* Color Choice Buttons */
+#color-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 400px;
+  padding: 0 1rem;
+}
+
+.btn-color {
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.btn-color kbd {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
+  color: white;
+}
+
+#btn-green {
+  background: #00cc00;
+}
+
+#btn-green:hover,
+#btn-green:active {
+  background: #00aa00;
+}
+
+#btn-red {
+  background: #ee0000;
+}
+
+#btn-red:hover,
+#btn-red:active {
+  background: #cc0000;
+}
+
+#btn-blue {
+  background: #0066ff;
+}
+
+#btn-blue:hover,
+#btn-blue:active {
+  background: #0055dd;
+}
+
+#btn-orange {
+  background: #ff8800;
+}
+
+#btn-orange:hover,
+#btn-orange:active {
+  background: #dd7700;
 }
 
 /* Result Screen */
@@ -415,13 +480,19 @@ kbd {
     max-width: 500px;
   }
 
-  #answer-buttons {
+  #answer-buttons,
+  #color-buttons {
     flex-direction: row;
+    flex-wrap: wrap;
     max-width: 500px;
   }
 
   .btn-answer {
     min-height: 70px;
+  }
+
+  #color-buttons .btn-answer {
+    flex: 1 1 45%;
   }
 
   .btn-exit {
@@ -447,7 +518,8 @@ kbd {
     display: none;
   }
 
-  #answer-buttons {
+  #answer-buttons,
+  #color-buttons {
     position: fixed;
     bottom: 0;
     left: 0;
@@ -462,6 +534,10 @@ kbd {
   .btn-answer {
     flex: 1;
     min-width: 45%;
+  }
+
+  #color-buttons .btn-answer {
+    flex: 1 1 45%;
   }
 
   .btn-exit {
