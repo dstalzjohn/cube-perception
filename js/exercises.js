@@ -33,6 +33,86 @@ const UPPER_CORNERS = [
 ];
 
 /**
+ * Nachbarfarben im Uhrzeigersinn (von oben gesehen mit Gelb oben)
+ * Rot → Grün → Orange → Blau → Rot
+ */
+const CLOCKWISE_NEIGHBORS = {
+  'green': { left: 'red', right: 'orange', opposite: 'blue' },
+  'red': { left: 'blue', right: 'green', opposite: 'orange' },
+  'blue': { left: 'orange', right: 'red', opposite: 'green' },
+  'orange': { left: 'green', right: 'blue', opposite: 'red' }
+};
+
+/**
+ * Die 4 Eck-Positionen und ihre sichtbaren Facetten
+ * FL = Vorne-Links, BL = Hinten-Links, BR = Hinten-Rechts, FR = Vorne-Rechts
+ */
+const CORNER_POSITION_DATA = {
+  FL: {
+    name: 'Vorne-Links',
+    positions: [
+      { face: 'top', row: 0, col: 0 },
+      { face: 'front', row: 0, col: 0 },
+      { face: 'left', row: 0, col: 0 }
+    ]
+  },
+  BL: {
+    name: 'Hinten-Links',
+    positions: [
+      { face: 'top', row: 2, col: 0 },
+      { face: 'left', row: 0, col: 2 }
+      // back nicht sichtbar
+    ]
+  },
+  BR: {
+    name: 'Hinten-Rechts',
+    positions: [
+      { face: 'top', row: 2, col: 2 },
+      { face: 'right', row: 0, col: 2 }
+      // back nicht sichtbar
+    ]
+  },
+  FR: {
+    name: 'Vorne-Rechts',
+    positions: [
+      { face: 'top', row: 0, col: 2 },
+      { face: 'front', row: 0, col: 2 },
+      { face: 'right', row: 0, col: 0 }
+    ]
+  }
+};
+
+/**
+ * Eck-Positions-Reihenfolge für Buttons (gegen Uhrzeigersinn von FL)
+ */
+const CORNER_BUTTON_ORDER = ['FL', 'BL', 'BR', 'FR'];
+
+/**
+ * Generiert die korrekten Ecken für eine gegebene Front-Farbe
+ *
+ * Die Reihenfolge der Farben entspricht den sichtbaren Positionen in CORNER_POSITION_DATA:
+ * - FL: [top, front, left]
+ * - FR: [top, front, right]
+ * - BL: [top, left, back] - back nicht sichtbar
+ * - BR: [top, right, back] - back nicht sichtbar
+ *
+ * Bei korrekter Orientierung: erste Farbe = yellow (zeigt nach oben)
+ */
+function getCornersForFront(frontColor) {
+  const neighbors = CLOCKWISE_NEIGHBORS[frontColor];
+  const leftColor = neighbors.left;
+  const rightColor = neighbors.right;
+  const backColor = neighbors.opposite;
+
+  return {
+    FL: ['yellow', frontColor, leftColor],
+    FR: ['yellow', frontColor, rightColor],
+    BL: ['yellow', leftColor, backColor],
+    BR: ['yellow', rightColor, backColor]
+  };
+}
+
+/**
  * Korrekte Ecke für jede Kanten-Farbe und Position
  * Key: Kantenfarbe
  * Value: { left: [Eckenfarben], right: [Eckenfarben] }
@@ -354,6 +434,105 @@ const EXERCISES = {
         cornerSide: cornerSide === 'left' ? 'Links' : 'Rechts',
         cornerColors: displayedCorner,
         orientation
+      };
+    }
+  },
+
+  'find-correct-corner': {
+    id: 'find-correct-corner',
+    name: 'Richtige Ecke finden',
+    description: 'Finde die eine Ecke, die an der richtigen Position ist',
+    rounds: 10,
+    answerType: 'corner-position',
+
+    generateRound() {
+      // 1. Wähle zufällige Front-Farbe
+      const frontColor = SIDE_COLORS[Math.floor(Math.random() * SIDE_COLORS.length)];
+      const neighbors = CLOCKWISE_NEIGHBORS[frontColor];
+      const leftColor = neighbors.left;
+      const rightColor = neighbors.right;
+
+      // 2. Hole die korrekten Ecken für diese Orientierung
+      const correctCorners = getCornersForFront(frontColor);
+
+      // 3. Wähle zufällig welche Ecke richtig positioniert ist
+      const correctPositionIndex = Math.floor(Math.random() * 4);
+      const correctPosition = CORNER_BUTTON_ORDER[correctPositionIndex];
+
+      // 4. Erstelle die zyklische Vertauschung der anderen 3 Ecken
+      // Die anderen 3 Ecken im Uhrzeigersinn oder gegen Uhrzeigersinn rotieren
+      const otherPositions = CORNER_BUTTON_ORDER.filter((_, i) => i !== correctPositionIndex);
+      const rotateClockwise = Math.random() < 0.5;
+
+      // Mapping: Position -> angezeigte Ecke
+      const displayedCorners = {};
+      displayedCorners[correctPosition] = correctCorners[correctPosition];
+
+      if (rotateClockwise) {
+        // Im Uhrzeigersinn: pos[0] zeigt Ecke von pos[2], pos[1] zeigt Ecke von pos[0], pos[2] zeigt Ecke von pos[1]
+        displayedCorners[otherPositions[0]] = correctCorners[otherPositions[2]];
+        displayedCorners[otherPositions[1]] = correctCorners[otherPositions[0]];
+        displayedCorners[otherPositions[2]] = correctCorners[otherPositions[1]];
+      } else {
+        // Gegen Uhrzeigersinn: pos[0] zeigt Ecke von pos[1], pos[1] zeigt Ecke von pos[2], pos[2] zeigt Ecke von pos[0]
+        displayedCorners[otherPositions[0]] = correctCorners[otherPositions[1]];
+        displayedCorners[otherPositions[1]] = correctCorners[otherPositions[2]];
+        displayedCorners[otherPositions[2]] = correctCorners[otherPositions[0]];
+      }
+
+      // 5. Generiere zufällige Orientierungen für alle 4 Ecken
+      const orientations = {};
+      CORNER_BUTTON_ORDER.forEach(pos => {
+        orientations[pos] = Math.floor(Math.random() * 3);
+      });
+
+      // 6. Erstelle das Pattern
+      const pattern = [];
+
+      // Gelbes Kreuz
+      pattern.push({ face: 'top', row: 1, col: 1, color: 'yellow' });
+      pattern.push({ face: 'top', row: 0, col: 1, color: 'yellow' });
+      pattern.push({ face: 'top', row: 1, col: 0, color: 'yellow' });
+      pattern.push({ face: 'top', row: 1, col: 2, color: 'yellow' });
+      pattern.push({ face: 'top', row: 2, col: 1, color: 'yellow' });
+
+      // Zentren
+      pattern.push({ face: 'front', row: 1, col: 1, color: frontColor });
+      pattern.push({ face: 'left', row: 1, col: 1, color: leftColor });
+      pattern.push({ face: 'right', row: 1, col: 1, color: rightColor });
+
+      // Kanten (obere Reihe)
+      pattern.push({ face: 'front', row: 0, col: 1, color: frontColor });
+      pattern.push({ face: 'left', row: 0, col: 1, color: leftColor });
+      pattern.push({ face: 'right', row: 0, col: 1, color: rightColor });
+
+      // 7. Füge die 4 Ecken mit Rotation hinzu
+      CORNER_BUTTON_ORDER.forEach(pos => {
+        const cornerColors = displayedCorners[pos];
+        const orientation = orientations[pos];
+        const rotatedColors = rotateArray(cornerColors, orientation);
+        const posData = CORNER_POSITION_DATA[pos];
+
+        // Für vordere Ecken: [top, front, side]
+        // Für hintere Ecken: [top, side] (back nicht sichtbar)
+        posData.positions.forEach((fieldPos, index) => {
+          if (index < rotatedColors.length) {
+            pattern.push({
+              face: fieldPos.face,
+              row: fieldPos.row,
+              col: fieldPos.col,
+              color: rotatedColors[index]
+            });
+          }
+        });
+      });
+
+      return {
+        pattern,
+        correctPosition,
+        frontColor,
+        displayedCorners,
+        orientations
       };
     }
   }

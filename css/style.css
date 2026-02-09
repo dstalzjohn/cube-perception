@@ -323,6 +323,47 @@ kbd {
   background: #dd7700;
 }
 
+/* Corner Position Buttons */
+#corner-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 400px;
+  padding: 0 1rem;
+}
+
+.corner-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.btn-corner {
+  background: #4a5568;
+  color: white;
+  font-weight: 600;
+  min-height: 70px;
+}
+
+.btn-corner:hover,
+.btn-corner:active {
+  background: #2d3748;
+}
+
+.btn-corner kbd {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
+  color: white;
+}
+
+.corner-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
 /* Result Screen */
 .result-summary {
   display: flex;
@@ -481,7 +522,8 @@ kbd {
   }
 
   #answer-buttons,
-  #color-buttons {
+  #color-buttons,
+  #corner-buttons {
     flex-direction: row;
     flex-wrap: wrap;
     max-width: 500px;
@@ -519,7 +561,8 @@ kbd {
   }
 
   #answer-buttons,
-  #color-buttons {
+  #color-buttons,
+  #corner-buttons {
     position: fixed;
     bottom: 0;
     left: 0;

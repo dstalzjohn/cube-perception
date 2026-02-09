@@ -29,7 +29,8 @@
             <div id="ready-screen" class="screen hidden">
                 <h2 id="exercise-name">Übung</h2>
                 <div class="ready-instructions">
-                    <div class="key-hints">
+                    <!-- Key hints für Richtig/Falsch -->
+                    <div id="key-hints-boolean" class="key-hints">
                         <div class="key-hint">
                             <kbd>J</kbd>
                             <span>= Richtig</span>
@@ -38,6 +39,20 @@
                             <kbd>K</kbd>
                             <span>= Falsch</span>
                         </div>
+                    </div>
+                    <!-- Key hints für Farbwahl -->
+                    <div id="key-hints-color" class="key-hints hidden">
+                        <div class="key-hint"><kbd>1</kbd><span>Grün</span></div>
+                        <div class="key-hint"><kbd>2</kbd><span>Rot</span></div>
+                        <div class="key-hint"><kbd>3</kbd><span>Blau</span></div>
+                        <div class="key-hint"><kbd>4</kbd><span>Orange</span></div>
+                    </div>
+                    <!-- Key hints für Eck-Position -->
+                    <div id="key-hints-corner" class="key-hints hidden">
+                        <div class="key-hint"><kbd>1</kbd><span>↙</span></div>
+                        <div class="key-hint"><kbd>2</kbd><span>↖</span></div>
+                        <div class="key-hint"><kbd>3</kbd><span>↗</span></div>
+                        <div class="key-hint"><kbd>4</kbd><span>↘</span></div>
                     </div>
                 </div>
                 <div class="screen-actions">
@@ -90,6 +105,27 @@
                     Orange <kbd>4</kbd>
                 </button>
                 <button id="btn-exit-color" class="btn btn-secondary btn-exit">
+                    Exit <kbd>Esc</kbd>
+                </button>
+            </div>
+
+            <!-- Answer Buttons: Eck-Position (während Running) -->
+            <div id="corner-buttons" class="hidden">
+                <div class="corner-grid">
+                    <button id="btn-corner-bl" class="btn btn-corner btn-answer" data-corner="BL">
+                        <span class="corner-icon">↖</span> <kbd>2</kbd>
+                    </button>
+                    <button id="btn-corner-br" class="btn btn-corner btn-answer" data-corner="BR">
+                        <span class="corner-icon">↗</span> <kbd>3</kbd>
+                    </button>
+                    <button id="btn-corner-fl" class="btn btn-corner btn-answer" data-corner="FL">
+                        <span class="corner-icon">↙</span> <kbd>1</kbd>
+                    </button>
+                    <button id="btn-corner-fr" class="btn btn-corner btn-answer" data-corner="FR">
+                        <span class="corner-icon">↘</span> <kbd>4</kbd>
+                    </button>
+                </div>
+                <button id="btn-exit-corner" class="btn btn-secondary btn-exit">
                     Exit <kbd>Esc</kbd>
                 </button>
             </div>

@@ -56,6 +56,13 @@ function initApp() {
     btnBlue: document.getElementById('btn-blue'),
     btnOrange: document.getElementById('btn-orange'),
     btnExitColor: document.getElementById('btn-exit-color'),
+    // Buttons - Eck-Position
+    cornerButtons: document.getElementById('corner-buttons'),
+    btnCornerFL: document.getElementById('btn-corner-fl'),
+    btnCornerBL: document.getElementById('btn-corner-bl'),
+    btnCornerBR: document.getElementById('btn-corner-br'),
+    btnCornerFR: document.getElementById('btn-corner-fr'),
+    btnExitCorner: document.getElementById('btn-exit-corner'),
     // Andere Buttons
     btnStart: document.getElementById('btn-start'),
     btnBackMenu: document.getElementById('btn-back-menu'),
@@ -107,7 +114,35 @@ function selectExercise(exerciseId) {
   state.selectedExercise = getExercise(exerciseId);
   state.totalRounds = state.selectedExercise.rounds;
   elements.exerciseName.textContent = state.selectedExercise.name;
+
+  // Zeige die richtigen Key-Hints
+  updateKeyHints();
+
   showState(AppState.READY);
+}
+
+/**
+ * Aktualisiert die Key-Hints auf dem Ready-Screen je nach Übungstyp
+ */
+function updateKeyHints() {
+  const keyHintsBoolean = document.getElementById('key-hints-boolean');
+  const keyHintsColor = document.getElementById('key-hints-color');
+  const keyHintsCorner = document.getElementById('key-hints-corner');
+
+  // Alle verstecken
+  keyHintsBoolean.classList.add('hidden');
+  keyHintsColor.classList.add('hidden');
+  keyHintsCorner.classList.add('hidden');
+
+  // Je nach Übungstyp anzeigen
+  const answerType = state.selectedExercise.answerType;
+  if (answerType === 'color-choice') {
+    keyHintsColor.classList.remove('hidden');
+  } else if (answerType === 'corner-position') {
+    keyHintsCorner.classList.remove('hidden');
+  } else {
+    keyHintsBoolean.classList.remove('hidden');
+  }
 }
 
 /**
@@ -208,6 +243,31 @@ function submitColorAnswer(chosenColor) {
 }
 
 /**
+ * Verarbeitet die Eck-Position-Antwort des Benutzers
+ */
+function submitCornerAnswer(chosenPosition) {
+  if (state.currentState !== AppState.RUNNING) return;
+  if (state.selectedExercise.answerType !== 'corner-position') return;
+
+  const roundTime = performance.now() - state.roundStartTime;
+  const currentRoundData = state.rounds[state.currentRound];
+
+  currentRoundData.userAnswer = chosenPosition;
+  currentRoundData.correct = (chosenPosition === currentRoundData.correctPosition);
+  currentRoundData.time = roundTime;
+
+  // Kurzes visuelles Feedback
+  showFeedback(currentRoundData.correct);
+
+  state.currentRound++;
+
+  // Kurze Pause vor nächster Runde
+  setTimeout(() => {
+    nextRound();
+  }, 300);
+}
+
+/**
  * Zeigt visuelles Feedback für richtig/falsch
  */
 function showFeedback(isCorrect) {
@@ -228,16 +288,19 @@ function finishExercise() {
 
   // Ergebnis-Tabelle füllen
   elements.resultBody.innerHTML = '';
-  const isColorChoice = state.selectedExercise.answerType === 'color-choice';
+  const answerType = state.selectedExercise.answerType;
 
   state.rounds.forEach((round, index) => {
     const row = document.createElement('tr');
     row.className = round.correct ? 'result-correct' : 'result-wrong';
 
     let patternText, answerText;
-    if (isColorChoice) {
+    if (answerType === 'color-choice') {
       patternText = translateColor(round.correctColor);
       answerText = translateColor(round.userAnswer);
+    } else if (answerType === 'corner-position') {
+      patternText = translateCorner(round.correctPosition);
+      answerText = translateCorner(round.userAnswer);
     } else {
       patternText = round.isCorrect ? 'Richtig' : 'Falsch';
       answerText = round.userAnswer ? 'J (Richtig)' : 'K (Falsch)';
@@ -295,17 +358,22 @@ function showState(newState) {
   if (newState === AppState.RUNNING) {
     elements.cubeContainer.classList.remove('hidden');
     // Je nach Übungstyp richtige Buttons anzeigen
+    elements.answerButtons.classList.add('hidden');
+    elements.colorButtons.classList.add('hidden');
+    elements.cornerButtons.classList.add('hidden');
+
     if (state.selectedExercise.answerType === 'color-choice') {
-      elements.answerButtons.classList.add('hidden');
       elements.colorButtons.classList.remove('hidden');
+    } else if (state.selectedExercise.answerType === 'corner-position') {
+      elements.cornerButtons.classList.remove('hidden');
     } else {
       elements.answerButtons.classList.remove('hidden');
-      elements.colorButtons.classList.add('hidden');
     }
   } else {
     elements.cubeContainer.classList.add('hidden');
     elements.answerButtons.classList.add('hidden');
     elements.colorButtons.classList.add('hidden');
+    elements.cornerButtons.classList.add('hidden');
   }
 
   // Aktiven Screen anzeigen
@@ -345,6 +413,13 @@ function initButtonHandlers() {
   elements.btnOrange.addEventListener('click', () => submitColorAnswer('orange'));
   elements.btnExitColor.addEventListener('click', backToMenu);
 
+  // Running Screen (Eck-Position-Buttons)
+  elements.btnCornerFL.addEventListener('click', () => submitCornerAnswer('FL'));
+  elements.btnCornerBL.addEventListener('click', () => submitCornerAnswer('BL'));
+  elements.btnCornerBR.addEventListener('click', () => submitCornerAnswer('BR'));
+  elements.btnCornerFR.addEventListener('click', () => submitCornerAnswer('FR'));
+  elements.btnExitCorner.addEventListener('click', backToMenu);
+
   // Result Screen
   elements.btnRestart.addEventListener('click', restartExercise);
   elements.btnMenu.addEventListener('click', backToMenu);
@@ -377,6 +452,19 @@ function handleKeyPress(event) {
           submitColorAnswer('blue');
         } else if (key === '4') {
           submitColorAnswer('orange');
+        } else if (key === 'escape') {
+          backToMenu();
+        }
+      } else if (state.selectedExercise.answerType === 'corner-position') {
+        // Eck-Position-Modus: 1-4 für Ecken
+        if (key === '1') {
+          submitCornerAnswer('FL');
+        } else if (key === '2') {
+          submitCornerAnswer('BL');
+        } else if (key === '3') {
+          submitCornerAnswer('BR');
+        } else if (key === '4') {
+          submitCornerAnswer('FR');
         } else if (key === 'escape') {
           backToMenu();
         }
@@ -416,6 +504,19 @@ function translateColor(color) {
     'white': 'Weiß'
   };
   return translations[color] || color;
+}
+
+/**
+ * Übersetzt Eck-Positionen ins Deutsche
+ */
+function translateCorner(position) {
+  const translations = {
+    'FL': '↙ V-Links',
+    'BL': '↖ H-Links',
+    'BR': '↗ H-Rechts',
+    'FR': '↘ V-Rechts'
+  };
+  return translations[position] || position;
 }
 
 // App starten wenn DOM geladen
