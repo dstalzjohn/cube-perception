@@ -292,6 +292,36 @@ const EXERCISES = {
     description: 'Erkenne ob zwei zufällig gewählte obere Kantenfarben korrekt zueinander liegen',
     rounds: 10,
 
+    infoHTML: `
+      <h3>Worum geht es?</h3>
+      <p>Auf dem Würfel werden zwei der drei sichtbaren oberen Kantensteine eingefärbt.
+      Du musst beurteilen, ob diese beiden Farben <strong>korrekt zueinander liegen</strong> —
+      also ob sie so auch auf einem gelösten Würfel vorkommen würden.</p>
+
+      <h3>Das Farbschema</h3>
+      <p>Beim Standard-Rubik's-Cube (westliches Schema) mit <strong>Gelb oben</strong> gilt
+      im Uhrzeigersinn von oben gesehen:</p>
+      <p><strong>Rot → Grün → Orange → Blau → Rot</strong></p>
+
+      <h3>Beispiele</h3>
+      <ul>
+        <li><strong>Front = Grün, Links = Rot</strong> → Richtig (Rot liegt links von Grün)</li>
+        <li><strong>Front = Grün, Rechts = Orange</strong> → Richtig (Orange liegt rechts von Grün)</li>
+        <li><strong>Front = Grün, Links = Blau</strong> → Falsch (Blau liegt gegenüber von Grün)</li>
+        <li><strong>Links = Rot, Rechts = Orange</strong> → Richtig (Front wäre Grün)</li>
+      </ul>
+
+      <h3>Bedienung</h3>
+      <p>Drücke <strong>J</strong> (oder den Button „Richtig"), wenn das Paar korrekt ist.<br>
+      Drücke <strong>K</strong> (oder den Button „Falsch"), wenn das Paar nicht zusammenpasst.</p>
+    `,
+
+    infoPattern: [
+      { face: 'front', row: 0, col: 1, color: 'green' },
+      { face: 'left', row: 0, col: 1, color: 'red' },
+      { face: 'top', row: 1, col: 1, color: 'yellow' }
+    ],
+
     // Generiert eine zufällige Runde
     generateRound() {
       // 1. Wähle zufällig 2 der 3 Felder
@@ -334,6 +364,38 @@ const EXERCISES = {
     description: 'Wähle die richtige Farbe für den markierten Kantenstein',
     rounds: 10,
     answerType: 'color-choice',  // Neuer Antworttyp
+
+    infoHTML: `
+      <h3>Worum geht es?</h3>
+      <p>Ein Kantenstein wird mit seiner Farbe angezeigt, ein anderer ist <strong>markiert</strong>
+      (hervorgehoben). Du musst die <strong>korrekte Farbe</strong> für den markierten Stein wählen,
+      basierend auf dem Farbschema des Würfels.</p>
+
+      <h3>Das Farbschema</h3>
+      <p>Mit <strong>Gelb oben</strong>, im Uhrzeigersinn von oben:</p>
+      <p><strong>Rot → Grün → Orange → Blau → Rot</strong></p>
+      <p>Daraus ergeben sich die Nachbarfarben:</p>
+      <ul>
+        <li>Grün: Links = <strong>Rot</strong>, Rechts = <strong>Orange</strong></li>
+        <li>Rot: Links = <strong>Blau</strong>, Rechts = <strong>Grün</strong></li>
+        <li>Blau: Links = <strong>Orange</strong>, Rechts = <strong>Rot</strong></li>
+        <li>Orange: Links = <strong>Grün</strong>, Rechts = <strong>Blau</strong></li>
+      </ul>
+
+      <h3>Beispiel</h3>
+      <p>Im Beispiel-Würfel unten ist die Front-Kante <strong>Grün</strong> und die linke Kante
+      ist markiert. Die richtige Antwort wäre <strong>Rot</strong>, weil Rot links von Grün liegt.</p>
+
+      <h3>Bedienung</h3>
+      <p>Wähle die richtige Farbe per Button oder mit den Tasten <strong>1-4</strong>
+      (1=Grün, 2=Rot, 3=Blau, 4=Orange).</p>
+    `,
+
+    infoPattern: [
+      { face: 'front', row: 0, col: 1, color: 'green' },
+      { face: 'left', row: 0, col: 1, color: 'highlight' },
+      { face: 'top', row: 1, col: 1, color: 'yellow' }
+    ],
 
     generateRound() {
       // 1. Wähle zufällig 2 der 3 Felder
@@ -386,6 +448,36 @@ const EXERCISES = {
     name: 'Ecke-Kante-Erkennung',
     description: 'Erkenne ob die Ecke zur Kante gehört (Position, nicht Orientierung)',
     rounds: 10,
+
+    infoHTML: `
+      <h3>Worum geht es?</h3>
+      <p>Auf dem Würfel werden eine <strong>Kante</strong> (oben-mitte der Front) und eine
+      <strong>Ecke</strong> (3 Felder an einer Ecke) eingefärbt. Du musst beurteilen, ob die
+      Ecke <strong>zur Kante gehört</strong> — also ob sie an dieser Position auf einem
+      gelösten Würfel liegen würde.</p>
+
+      <h3>Wichtig: Position, nicht Orientierung!</h3>
+      <p>Es geht nur darum, ob die <strong>richtigen Farben</strong> in der Ecke sind — die
+      Orientierung (welche Farbe wohin zeigt) spielt <strong>keine Rolle</strong>. Solange die
+      Ecke die drei korrekten Farben enthält, ist sie richtig.</p>
+
+      <h3>Beispiel</h3>
+      <p>Die Front-Kante zeigt <strong>Grün</strong>. Die linke Ecke muss dann die Farben
+      <strong>Gelb, Grün und Rot</strong> enthalten (egal in welcher Reihenfolge), weil die
+      linke Ecke neben der grünen Kante die Farben Gelb (oben), Grün (Front) und Rot (links) hat.</p>
+
+      <h3>Bedienung</h3>
+      <p>Drücke <strong>J</strong> (oder „Richtig"), wenn die Ecke zur Kante gehört.<br>
+      Drücke <strong>K</strong> (oder „Falsch"), wenn die Ecke nicht dorthin gehört.</p>
+    `,
+
+    infoPattern: [
+      { face: 'front', row: 0, col: 1, color: 'green' },
+      { face: 'front', row: 0, col: 0, color: 'green' },
+      { face: 'left', row: 0, col: 0, color: 'red' },
+      { face: 'top', row: 0, col: 0, color: 'yellow' },
+      { face: 'top', row: 1, col: 1, color: 'yellow' }
+    ],
 
     generateRound() {
       // 1. Wähle zufällige Kantenfarbe
@@ -444,6 +536,57 @@ const EXERCISES = {
     description: 'Finde die eine Ecke, die an der richtigen Position ist',
     rounds: 10,
     answerType: 'corner-position',
+
+    infoHTML: `
+      <h3>Worum geht es?</h3>
+      <p>Alle <strong>4 oberen Ecken</strong> und die <strong>Kanten und Zentren</strong> des
+      Würfels werden eingefärbt. Allerdings ist nur <strong>eine einzige Ecke</strong> an der
+      richtigen Position — die anderen drei sind zyklisch vertauscht. Finde die richtige!</p>
+
+      <h3>Wie erkenne ich die richtige Ecke?</h3>
+      <p>Jede Ecke hat 3 Farben. Auf einem gelösten Würfel muss jede Ecke genau die 3 Farben
+      der angrenzenden Seiten enthalten. Vergleiche die Farben jeder Ecke mit den benachbarten
+      Zentren und Kanten.</p>
+
+      <h3>Beispiel</h3>
+      <p>Wenn <strong>Grün</strong> vorne ist, <strong>Rot</strong> links und
+      <strong>Orange</strong> rechts, dann gilt:</p>
+      <ul>
+        <li><strong>Vorne-Links (↙)</strong>: Gelb + Grün + Rot</li>
+        <li><strong>Hinten-Links (↖)</strong>: Gelb + Rot + Blau</li>
+        <li><strong>Hinten-Rechts (↗)</strong>: Gelb + Orange + Blau</li>
+        <li><strong>Vorne-Rechts (↘)</strong>: Gelb + Grün + Orange</li>
+      </ul>
+      <p>Prüfe, welche der 4 angezeigten Ecken die korrekten Farben für ihre Position hat.</p>
+
+      <h3>Bedienung</h3>
+      <p>Wähle die richtige Ecke per Button oder mit den Tasten <strong>1-4</strong>
+      (1=↙, 2=↖, 3=↗, 4=↘).</p>
+    `,
+
+    infoPattern: [
+      { face: 'top', row: 1, col: 1, color: 'yellow' },
+      { face: 'top', row: 0, col: 1, color: 'yellow' },
+      { face: 'top', row: 1, col: 0, color: 'yellow' },
+      { face: 'top', row: 1, col: 2, color: 'yellow' },
+      { face: 'top', row: 2, col: 1, color: 'yellow' },
+      { face: 'front', row: 1, col: 1, color: 'green' },
+      { face: 'left', row: 1, col: 1, color: 'red' },
+      { face: 'right', row: 1, col: 1, color: 'orange' },
+      { face: 'front', row: 0, col: 1, color: 'green' },
+      { face: 'left', row: 0, col: 1, color: 'red' },
+      { face: 'right', row: 0, col: 1, color: 'orange' },
+      { face: 'top', row: 0, col: 0, color: 'yellow' },
+      { face: 'front', row: 0, col: 0, color: 'green' },
+      { face: 'left', row: 0, col: 0, color: 'red' },
+      { face: 'top', row: 2, col: 0, color: 'yellow' },
+      { face: 'left', row: 0, col: 2, color: 'blue' },
+      { face: 'top', row: 2, col: 2, color: 'yellow' },
+      { face: 'right', row: 0, col: 2, color: 'blue' },
+      { face: 'top', row: 0, col: 2, color: 'yellow' },
+      { face: 'front', row: 0, col: 2, color: 'green' },
+      { face: 'right', row: 0, col: 0, color: 'orange' }
+    ],
 
     generateRound() {
       // 1. Wähle zufällige Front-Farbe
@@ -545,7 +688,9 @@ function getExerciseList() {
   return Object.values(EXERCISES).map(ex => ({
     id: ex.id,
     name: ex.name,
-    description: ex.description
+    description: ex.description,
+    infoHTML: ex.infoHTML,
+    infoPattern: ex.infoPattern
   }));
 }
 

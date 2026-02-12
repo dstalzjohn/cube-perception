@@ -6,6 +6,7 @@
 // App State
 const AppState = {
   MENU: 'menu',
+  INFO: 'info',
   READY: 'ready',
   RUNNING: 'running',
   RESULT: 'result'
@@ -31,6 +32,10 @@ function initApp() {
   // DOM Elemente cachen
   elements = {
     menuScreen: document.getElementById('menu-screen'),
+    infoScreen: document.getElementById('info-screen'),
+    infoExerciseName: document.getElementById('info-exercise-name'),
+    infoContent: document.getElementById('info-content'),
+    btnInfoBack: document.getElementById('btn-info-back'),
     readyScreen: document.getElementById('ready-screen'),
     runningScreen: document.getElementById('running-screen'),
     resultScreen: document.getElementById('result-screen'),
@@ -96,6 +101,9 @@ function renderExerciseList() {
   elements.exerciseList.innerHTML = '';
 
   exercises.forEach(ex => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'exercise-button-wrapper';
+
     const button = document.createElement('button');
     button.className = 'exercise-button';
     button.innerHTML = `
@@ -103,8 +111,40 @@ function renderExerciseList() {
       <span>${ex.description}</span>
     `;
     button.addEventListener('click', () => selectExercise(ex.id));
-    elements.exerciseList.appendChild(button);
+
+    const infoBtn = document.createElement('button');
+    infoBtn.className = 'btn-info';
+    infoBtn.innerHTML = 'ⓘ';
+    infoBtn.title = 'Info zur Übung';
+    infoBtn.addEventListener('click', () => showInfo(ex.id));
+
+    wrapper.appendChild(button);
+    wrapper.appendChild(infoBtn);
+    elements.exerciseList.appendChild(wrapper);
   });
+}
+
+/**
+ * Zeigt die Info-Seite für eine Übung
+ */
+function showInfo(exerciseId) {
+  const exercise = getExercise(exerciseId);
+  elements.infoExerciseName.textContent = exercise.name;
+  elements.infoContent.innerHTML = exercise.infoHTML;
+
+  // Beispiel-Cube anzeigen
+  resetCubeColors();
+  if (exercise.infoPattern) {
+    exercise.infoPattern.forEach(p => {
+      if (p.color === 'highlight') {
+        highlightField(p.face, p.row, p.col);
+      } else {
+        setFieldColor(p.face, p.row, p.col, p.color);
+      }
+    });
+  }
+
+  showState(AppState.INFO);
 }
 
 /**
@@ -350,6 +390,7 @@ function showState(newState) {
 
   // Alle Screens verstecken
   elements.menuScreen.classList.add('hidden');
+  elements.infoScreen.classList.add('hidden');
   elements.readyScreen.classList.add('hidden');
   elements.runningScreen.classList.add('hidden');
   elements.resultScreen.classList.add('hidden');
@@ -369,6 +410,11 @@ function showState(newState) {
     } else {
       elements.answerButtons.classList.remove('hidden');
     }
+  } else if (newState === AppState.INFO) {
+    elements.cubeContainer.classList.remove('hidden');
+    elements.answerButtons.classList.add('hidden');
+    elements.colorButtons.classList.add('hidden');
+    elements.cornerButtons.classList.add('hidden');
   } else {
     elements.cubeContainer.classList.add('hidden');
     elements.answerButtons.classList.add('hidden');
@@ -377,9 +423,12 @@ function showState(newState) {
   }
 
   // Aktiven Screen anzeigen
-  switch (newState) {
+    switch (newState) {
     case AppState.MENU:
       elements.menuScreen.classList.remove('hidden');
+      break;
+    case AppState.INFO:
+      elements.infoScreen.classList.remove('hidden');
       break;
     case AppState.READY:
       elements.readyScreen.classList.remove('hidden');
@@ -397,6 +446,9 @@ function showState(newState) {
  * Initialisiert Button Event Handler
  */
 function initButtonHandlers() {
+  // Info Screen
+  elements.btnInfoBack.addEventListener('click', backToMenu);
+
   // Ready Screen
   elements.btnStart.addEventListener('click', startExercise);
   elements.btnBackMenu.addEventListener('click', backToMenu);
@@ -432,6 +484,12 @@ function handleKeyPress(event) {
   const key = event.key.toLowerCase();
 
   switch (state.currentState) {
+    case AppState.INFO:
+      if (key === 'escape') {
+        backToMenu();
+      }
+      break;
+
     case AppState.READY:
       if (key === ' ' || event.code === 'Space') {
         event.preventDefault();
