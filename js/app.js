@@ -122,6 +122,16 @@ function renderExerciseList() {
     wrapper.appendChild(infoBtn);
     elements.exerciseList.appendChild(wrapper);
   });
+
+  // Generelle Info-Button
+  const generalInfoBtn = document.createElement('button');
+  generalInfoBtn.className = 'exercise-button general-info-button';
+  generalInfoBtn.innerHTML = `
+    <strong>Über CubeLearner</strong>
+    <span>Was diese App trainiert und wie das Farbschema funktioniert</span>
+  `;
+  generalInfoBtn.addEventListener('click', showGeneralInfo);
+  elements.exerciseList.appendChild(generalInfoBtn);
 }
 
 /**
@@ -145,6 +155,57 @@ function showInfo(exerciseId) {
   }
 
   showState(AppState.INFO);
+}
+
+/**
+ * Zeigt die generelle Info-Seite
+ */
+function showGeneralInfo() {
+  elements.infoExerciseName.textContent = 'Über CubeLearner';
+  elements.infoContent.innerHTML = `
+    <h3>Worum geht es?</h3>
+    <p>Du kannst den Rubik's Cube bereits mit der <strong>Anfängermethode</strong>
+    (Layer-by-Layer) lösen — und möchtest jetzt <strong>schneller</strong> werden.</p>
+    <p>Ein großer Teil der Lösungszeit geht nicht für das Drehen verloren, sondern für
+    das <strong>Suchen und Erkennen</strong> von Farbmustern. Welche Kante gehört wohin?
+    Welche Ecke passt zu welcher Position?</p>
+    <p>Genau das trainiert CubeLearner: Deine <strong>visuelle Wahrnehmung</strong> der
+    Farbpositionen auf dem Würfel. Je schneller du Farben und ihre Zusammenhänge erkennst,
+    desto weniger Denkpausen brauchst du beim Lösen.</p>
+
+    <h3>Das Farbschema</h3>
+    <p>CubeLearner verwendet das <strong>westliche Standard-Farbschema</strong>. Dieses
+    Schema ist bei den meisten Würfeln (z.B. von Rubik's, GAN, MoYu) voreingestellt.</p>
+
+    <h3>Gegenüberliegende Seiten</h3>
+    <p>Jeweils zwei Farben liegen sich immer gegenüber:</p>
+    <ul>
+      <li><strong>Weiß ↔ Gelb</strong> (oben/unten)</li>
+      <li><strong>Rot ↔ Orange</strong></li>
+      <li><strong>Blau ↔ Grün</strong></li>
+    </ul>
+
+    <h3>Reihenfolge der Seitenfarben</h3>
+    <p>Wenn <strong>Gelb oben</strong> ist und du von oben auf den Würfel schaust, gehen
+    die 4 Seitenfarben im <strong>Uhrzeigersinn</strong>:</p>
+    <p><strong>Rot → Grün → Orange → Blau → Rot …</strong></p>
+    <p>Daraus kannst du alle Nachbarschaften ableiten:</p>
+    <ul>
+      <li>Grün hat links <strong>Rot</strong> und rechts <strong>Orange</strong></li>
+      <li>Rot hat links <strong>Blau</strong> und rechts <strong>Grün</strong></li>
+      <li>Blau hat links <strong>Orange</strong> und rechts <strong>Rot</strong></li>
+      <li>Orange hat links <strong>Grün</strong> und rechts <strong>Blau</strong></li>
+    </ul>
+
+    <h3>Die Übungen</h3>
+    <p>Die 4 Übungen trainieren verschiedene Aspekte dieser Farberkennung — von einfachen
+    Kantenpaaren bis hin zu kompletten Eckpositionen. Tippe im Menü auf das
+    <strong>ⓘ</strong>-Symbol neben einer Übung, um eine detaillierte Erklärung zu erhalten.</p>
+  `;
+
+  showState(AppState.INFO);
+  // Kein Beispiel-Cube für die generelle Info
+  elements.cubeContainer.classList.add('hidden');
 }
 
 /**

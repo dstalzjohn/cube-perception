@@ -122,6 +122,11 @@ main {
   font-size: 0.9rem;
 }
 
+.general-info-button {
+  margin-top: 0.5rem;
+  border-style: dashed;
+}
+
 .btn-info {
   display: flex;
   align-items: center;
